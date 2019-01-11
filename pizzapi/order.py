@@ -12,12 +12,13 @@ class Order(object):
     up all the logic for actually placing the order, after we've
     determined what we want from the Menu. 
     """
-    def __init__(self, store, customer, address, country=COUNTRY_USA):
+    def __init__(self, store, customer, address, country=COUNTRY_USA, delivery=False):
         self.store = store
         self.menu = Menu.from_store(store_id=store.id, country=country)
         self.customer = customer
         self.address = address
         self.urls = Urls(country)
+        service_method = 'Delivery' if delivery else 'Carryout'
         self.data = {
             'Address': {'Street': self.address.street,
                         'City': self.address.city,
@@ -28,7 +29,7 @@ class Order(object):
             'OrderChannel': 'OLO', 'OrderID': '', 'NoCombine': True,
             'OrderMethod': 'Web', 'OrderTaker': None, 'Payments': [],
             'Products': [], 'Market': '', 'Currency': '',
-            'ServiceMethod': 'Delivery', 'Tags': {}, 'Version': '1.0',
+            'ServiceMethod': service_method, 'Tags': {}, 'Version': '1.0',
             'SourceOrganizationURI': 'order.dominos.com', 'LanguageCode': 'en',
             'Partners': {}, 'NewUser': True, 'metaData': {}, 'Amounts': {},
             'BusinessDate': '', 'EstimatedWaitMinutes': '',
@@ -37,9 +38,9 @@ class Order(object):
 
     # TODO: Implement item options
     # TODO: Add exception handling for KeyErrors
-    def add_item(self, code, qty=1, options=[]):
+    def add_item(self, code, qty=1, options={}):
         item = self.menu.variants[code]
-        item.update(ID=1, isNew=True, Qty=qty, AutoRemove=False)
+        item.update(ID=1, isNew=True, Qty=qty, AutoRemove=False, Options=options)
         self.data['Products'].append(item)
         return item
 
@@ -49,10 +50,7 @@ class Order(object):
         return self.data['Products'].pop(codes.index(code))
 
     def add_coupon(self, code, qty=1):
-        item = self.menu.variants[code]
-        item.update(ID=1, isNew=True, Qty=qty, AutoRemove=False)
-        self.data['Coupons'].append(item)
-        return item
+        self.data['Coupons'].append({'Code': code})
 
     def remove_coupon(self, code):
         codes = [x['Code'] for x in self.data['Coupons']]
@@ -94,13 +92,13 @@ class Order(object):
         return response['Status'] != -1
 
     # TODO: Actually test this
-    def place(self, card=False):
-        self.pay_with(card)
+    def place(self, card=False, giftcards=[]):
+        self.pay_with(card=card, giftcards=giftcards)
         response = self._send(self.urls.place_url(), False)
         return response
 
     # TODO: Add self.price() and update whenever called and items were changed
-    def pay_with(self, card=False):
+    def pay_with(self, card=False, giftcards=[]):
         """Use this instead of self.place when testing"""
         # get the price to check that everything worked okay
         response = self._send(self.urls.price_url(), True)
@@ -108,13 +106,7 @@ class Order(object):
         if response['Status'] == -1:
             raise Exception('get price failed: %r' % response)
 
-        if card == False:
-            self.data['Payments'] = [
-                {
-                    'Type': 'Cash',
-                }
-            ]
-        else:
+        if card:
             self.data['Payments'] = [
                 {
                     'Type': 'CreditCard',
@@ -126,5 +118,20 @@ class Order(object):
                     'PostalCode': int(card.zip)
                 }
             ]
+        elif giftcards:
+            self.data['Payments'] = [{
+                'Type': 'GiftCard',
+                'Amount': giftcard.amount,
+                'Number': giftcard.number,
+                'SecurityCode': giftcard.pin,
+            } for giftcard in giftcards]
+            # Make sure our payments cover the entire purchase price
+            assert sum([float(p['Amount']) for p in self.data['Payments']]) == float(self.data['Amounts'].get('Customer', 0))
+        else:
+            self.data['Payments'] = [
+                {
+                    'Type': 'Cash',
+                }
+            ]
 
-	return response
+        return response

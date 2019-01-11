@@ -1,11 +1,11 @@
 import re
 
 
-class PaymentObject(object):
-    """A PaymentObject represents a credit card.
+class CardObject(object):
+    """A CardObject represents a credit card.
 
     There's some sweet logic in here to make sure that the type of card
-    you passed is valid. 
+    you passed is valid.
     """
     def __init__(self, number='', expiration='', cvv='', zip=''):
         self.name = ''
@@ -31,3 +31,10 @@ class PaymentObject(object):
                     'ENROUTE': r'^(?:2014|2149)\d{11}$'}
         return next((card_type for card_type, pattern in list(patterns.items())
                      if re.match(pattern, self.number)), '')
+
+
+class GiftCardObject(object):
+    def __init__(self, number, pin, amount):
+        self.number = number
+        self.pin = pin
+        self.amount = amount

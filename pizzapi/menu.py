@@ -37,6 +37,7 @@ class Menu(object):
     documenting this class.
     """
     def __init__(self, data={}, country=COUNTRY_USA):
+        self.raw = data
         self.variants = data.get('Variants', {})
         self.menu_by_code = {}
         self.root_categories = {}
