@@ -22,7 +22,7 @@ class Order(object):
         self.address = address
         self.urls = Urls(country)
         service_method = 'Delivery' if delivery else 'Carryout'
-        self.data = data if data else {
+        self.data = {
             'Address': {'Street': self.address.street,
                         'City': self.address.city,
                         'Region': self.address.region,
@@ -38,6 +38,16 @@ class Order(object):
             'BusinessDate': '', 'EstimatedWaitMinutes': '',
             'PriceOrderTime': '', 'AmountsBreakdown': {}
             }
+
+        # Allow the caller to override some data
+        if data:
+            self.data = data
+            self.data['Address'] = {'Street': self.address.street,
+                'City': self.address.city,
+                'Region': self.address.region,
+                'PostalCode': self.address.zip,
+                'Type': 'House'}
+            self.data['ServiceMethod'] = service_method
 
     # TODO: Implement item options
     # TODO: Add exception handling for KeyErrors
