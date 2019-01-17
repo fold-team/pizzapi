@@ -11,15 +11,18 @@ class Order(object):
     The Order is perhaps the second most complicated class - it wraps
     up all the logic for actually placing the order, after we've
     determined what we want from the Menu. 
+
+    Args:
+    - data - a preinitialized order object
     """
-    def __init__(self, store, customer, address, country=COUNTRY_USA, delivery=False):
+    def __init__(self, store, customer, address, country=COUNTRY_USA, delivery=False, data=None):
         self.store = store
         self.menu = Menu.from_store(store_id=store.id, country=country)
         self.customer = customer
         self.address = address
         self.urls = Urls(country)
         service_method = 'Delivery' if delivery else 'Carryout'
-        self.data = {
+        self.data = data if data else {
             'Address': {'Street': self.address.street,
                         'City': self.address.city,
                         'Region': self.address.region,
