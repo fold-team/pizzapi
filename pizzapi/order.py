@@ -15,13 +15,13 @@ class Order(object):
     Args:
     - data - a preinitialized order object
     """
-    def __init__(self, store, customer, address, country=COUNTRY_USA, delivery=False, data=None):
+    def __init__(self, store, customer, address, country=COUNTRY_USA, service='Carryout', data=None):
         self.store = store
         self.menu = Menu.from_store(store_id=store.id, country=country)
         self.customer = customer
         self.address = address
         self.urls = Urls(country)
-        service_method = 'Delivery' if delivery else 'Carryout'
+        assert service in ['Carryout', 'Delivery']
         self.data = {
             'Address': {'Street': self.address.street,
                         'City': self.address.city,
@@ -32,7 +32,7 @@ class Order(object):
             'OrderChannel': 'OLO', 'OrderID': '', 'NoCombine': True,
             'OrderMethod': 'Web', 'OrderTaker': None, 'Payments': [],
             'Products': [], 'Market': '', 'Currency': '',
-            'ServiceMethod': service_method, 'Tags': {}, 'Version': '1.0',
+            'ServiceMethod': service, 'Tags': {}, 'Version': '1.0',
             'SourceOrganizationURI': 'order.dominos.com', 'LanguageCode': 'en',
             'Partners': {}, 'NewUser': True, 'metaData': {}, 'Amounts': {},
             'BusinessDate': '', 'EstimatedWaitMinutes': '',
@@ -47,7 +47,7 @@ class Order(object):
                 'Region': self.address.region,
                 'PostalCode': self.address.zip,
                 'Type': 'House'}
-            self.data['ServiceMethod'] = service_method
+            self.data['ServiceMethod'] = service
 
     # TODO: Implement item options
     # TODO: Add exception handling for KeyErrors
