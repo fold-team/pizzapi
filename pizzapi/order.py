@@ -23,11 +23,7 @@ class Order(object):
         self.urls = Urls(country)
         assert service in ['Carryout', 'Delivery']
         self.data = {
-            'Address': {'Street': self.address.street,
-                        'City': self.address.city,
-                        'Region': self.address.region,
-                        'PostalCode': self.address.zip,
-                        'Type': 'House'},
+            'Address': self.address.data,
             'Coupons': [], 'CustomerID': '', 'Extension': '',
             'OrderChannel': 'OLO', 'OrderID': order_id, 'NoCombine': True,
             'OrderMethod': 'Web', 'OrderTaker': None, 'Payments': [],
@@ -42,11 +38,7 @@ class Order(object):
         # Allow the caller to override some data
         if data:
             self.data = data
-            self.data['Address'] = {'Street': self.address.street,
-                'City': self.address.city,
-                'Region': self.address.region,
-                'PostalCode': self.address.zip,
-                'Type': 'House'}
+            self.data['Address'] = self.address.data
             self.data['ServiceMethod'] = service
 
     # TODO: Implement item options

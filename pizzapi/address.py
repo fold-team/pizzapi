@@ -18,18 +18,21 @@ class Address(object):
         country (String): Country
     """
 
-    def __init__(self, street, city, region='', zip='', country=COUNTRY_USA, *args):
+    def __init__(self, street, city, region='', zip='', delivery_instructions='', country=COUNTRY_USA, *args):
         self.street = street.strip()
         self.city = city.strip()
         self.region = region.strip()
         self.zip = str(zip).strip()
         self.urls = Urls(country)
+        self.delivery_instructions = delivery_instructions.strip()
         self.country = country
 
     @property
     def data(self):
         return {'Street': self.street, 'City': self.city,
-                'Region': self.region, 'PostalCode': self.zip}
+                'Region': self.region, 'PostalCode': self.zip,
+                'DeliveryInstructions': self.delivery_instructions,
+                'Type': 'House'}
 
     @property
     def line1(self):
