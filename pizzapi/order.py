@@ -15,7 +15,7 @@ class Order(object):
     Args:
     - data - a preinitialized order object
     """
-    def __init__(self, store, customer, address, country=COUNTRY_USA, service='Carryout', data=None):
+    def __init__(self, store, customer, address, country=COUNTRY_USA, service='Carryout', data=None, order_id=''):
         self.store = store
         self.menu = Menu.from_store(store_id=store.id, country=country)
         self.customer = customer
@@ -29,7 +29,7 @@ class Order(object):
                         'PostalCode': self.address.zip,
                         'Type': 'House'},
             'Coupons': [], 'CustomerID': '', 'Extension': '',
-            'OrderChannel': 'OLO', 'OrderID': '', 'NoCombine': True,
+            'OrderChannel': 'OLO', 'OrderID': order_id, 'NoCombine': True,
             'OrderMethod': 'Web', 'OrderTaker': None, 'Payments': [],
             'Products': [], 'Market': '', 'Currency': '',
             'ServiceMethod': service, 'Tags': {}, 'Version': '1.0',
