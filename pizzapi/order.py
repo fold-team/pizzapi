@@ -15,9 +15,9 @@ class Order(object):
     Args:
     - data - a preinitialized order object
     """
-    def __init__(self, store, customer, address, country=COUNTRY_USA, service='Carryout', data=None, order_id=''):
+    def __init__(self, store, customer, address, country=COUNTRY_USA, service='Carryout', data=None, order_id='', menu_data=None):
         self.store = store
-        self.menu = Menu.from_store(store_id=store.id, country=country)
+        self.menu = Menu(data=menu_data) if menu_data else Menu.from_store(store_id=store.id, country=country)
         self.customer = customer
         self.address = address
         self.urls = Urls(country)
@@ -131,7 +131,7 @@ class Order(object):
                 'SecurityCode': giftcard.pin,
             } for giftcard in giftcards]
             # Make sure our payments cover the entire purchase price
-            assert sum([float(p['Amount']) for p in self.data['Payments']]) == float(self.data['Amounts'].get('Customer', 0))
+            # assert sum([float(p['Amount']) for p in self.data['Payments']]) == float(self.data['Amounts'].get('Customer', 0))
         else:
             self.data['Payments'] = [
                 {
