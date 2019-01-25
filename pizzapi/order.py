@@ -1,3 +1,4 @@
+from copy import deepcopy
 import requests
 
 from .menu import Menu
@@ -45,6 +46,7 @@ class Order(object):
     # TODO: Add exception handling for KeyErrors
     def add_item(self, code, qty=1, options={}):
         item = self.menu.variants[code]
+        item = deepcopy(item)
         item.update(ID=1, isNew=True, Qty=qty, AutoRemove=False, Options=options)
         self.data['Products'].append(item)
         return item
