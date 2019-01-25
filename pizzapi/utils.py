@@ -1,6 +1,8 @@
 import requests
 import xmltodict
 
+TIMEOUT = 15
+
 # TODO: Find out why this occasionally hangs
 # TODO: Can we wrap this up, so the callers don't have to worry about the 
     # complexity of two types of requests? 
@@ -12,7 +14,7 @@ def request_json(url, **kwargs):
 
     This will error on an invalid request (requests.Request.raise_for_status()), but will otherwise return a dict.
     """
-    r = requests.get(url.format(**kwargs))
+    r = requests.get(url.format(**kwargs), timeout=TIMEOUT)
     r.raise_for_status()
     return r.json()
 
@@ -22,6 +24,6 @@ def request_xml(url, **kwargs):
     
     This is in every respect identical to request_json. 
     """
-    r = requests.get(url.format(**kwargs))
+    r = requests.get(url.format(**kwargs), timeout=TIMEOUT)
     r.raise_for_status()
     return xmltodict.parse(r.text)

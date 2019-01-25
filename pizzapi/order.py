@@ -3,6 +3,7 @@ import requests
 
 from .menu import Menu
 from .urls import Urls, COUNTRY_USA 
+from .utils import TIMEOUT
 
 
 # TODO: Add add_coupon and remove_coupon methods
@@ -83,7 +84,7 @@ class Order(object):
             'Content-Type': 'application/json'
         }
 
-        r = requests.post(url=url, headers=headers, json={'Order': self.data})
+        r = requests.post(url=url, headers=headers, json={'Order': self.data}, timeout=TIMEOUT)
         r.raise_for_status()
         json_data = r.json()
 
