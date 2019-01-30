@@ -7,7 +7,7 @@ class Address(object):
 
     The Address object describes a street address in North America (USA or
     Canada, for now). Callers can use the Address object's methods to find
-    the closest or nearby stores from the API. 
+    the closest or nearby stores from the API.
 
     Attributes:
         street (String): Street address
@@ -42,16 +42,21 @@ class Address(object):
     def line2(self):
         return '{City}, {Region}, {PostalCode}'.format(**self.data)
 
-    def nearby_stores(self, service='Delivery'):
+    def nearby_stores(self, service='Delivery', show_closed=False):
         """Query the API to find nearby stores.
 
-        nearby_stores will filter the information we receive from the API
-        to exclude stores that are not currently online (!['IsOnlineNow']),
-        and stores that are not currently in service (!['ServiceIsOpen']).
+        nearby_stores will by default filter the information we receive from
+        the API to exclude stores that are not currently online
+        (!['IsOnlineNow']), and stores that are not currently in service
+        (!['ServiceIsOpen']).
+
+        optional show_closed param returns all results, even if not open/ online
         """
         data = request_json(self.urls.find_url(), line1=self.line1, line2=self.line2, type=service)
-        return [Store(x, self.country) for x in data['Stores']
-                if x['IsOnlineNow'] and x['ServiceIsOpen'][service]]
+        if not show_closed:
+            return [Store(x, self.country) for x in data['Stores']
+                    if x['IsOnlineNow'] and x['ServiceIsOpen'][service]]
+        return [Store(x, self.country) for x in data['Stores']]
 
     def closest_store(self, service='Delivery'):
         stores = self.nearby_stores(service=service)
