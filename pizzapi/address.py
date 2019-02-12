@@ -11,6 +11,7 @@ class Address(object):
 
     Attributes:
         street (String): Street address
+        apt_num (String - Optional): Apartment Number
         city (String): North American city
         region (String): North American region (state, province, territory)
         zip (String): North American ZIP code
@@ -18,7 +19,8 @@ class Address(object):
         country (String): Country
     """
 
-    def __init__(self, street, city, region='', zip='', delivery_instructions='', country=COUNTRY_USA, *args):
+    def __init__(self, street, city, region='', zip='', delivery_instructions='', country=COUNTRY_USA, type='House', apt_num='', *args):
+        assert type in ('House', 'Apartment')
         self.street = street.strip()
         self.city = city.strip()
         self.region = region.strip()
@@ -26,17 +28,26 @@ class Address(object):
         self.urls = Urls(country)
         self.delivery_instructions = delivery_instructions.strip()
         self.country = country
+        self.type = type
+        self.apt_num = apt_num
 
     @property
     def data(self):
-        return {'Street': self.street, 'City': self.city,
+        resp = {'Street': self.street, 'City': self.city,
                 'Region': self.region, 'PostalCode': self.zip,
                 'DeliveryInstructions': self.delivery_instructions,
-                'Type': 'House'}
+                'Type': self.type}
+        if self.type == 'Apartment':
+            resp['UnitNumber'] = self.apt_num
+            resp['UnitType'] = 'APT'
+        return resp
 
     @property
     def line1(self):
-        return '{Street}'.format(**self.data)
+        resp = '{Street}'.format(**self.data)
+        if self.type == 'Apartment':
+            resp += ' #{UnitNumber}'.format(**self.data)
+        return resp
 
     @property
     def line2(self):
