@@ -1,8 +1,9 @@
 from .store import Store
 from .utils import request_json
 from .urls import Urls, COUNTRY_USA
+from .proxy import ProxyMeta
 
-class Address(object):
+class Address(metaclass=ProxyMeta):
     """Create an address, for finding stores and placing orders.
 
     The Address object describes a street address in North America (USA or
@@ -63,7 +64,7 @@ class Address(object):
 
         optional show_closed param returns all results, even if not open/ online
         """
-        data = request_json(self.urls.find_url(), line1=self.line1, line2=self.line2, type=service)
+        data = request_json(self.urls.find_url(), line1=self.line1, line2=self.line2, type=service, proxies=self.proxies)
         if not show_closed:
             return [Store(x, self.country) for x in data['Stores']
                     if x['IsOnlineNow'] and x['ServiceIsOpen'][service]]

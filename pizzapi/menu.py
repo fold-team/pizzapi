@@ -1,4 +1,5 @@
 from __future__ import print_function
+from .proxy import ProxyMeta
 from .urls import Urls, COUNTRY_USA
 from .utils import request_json
 
@@ -27,7 +28,7 @@ class MenuItem(object):
         self.categories = []
 
 
-class Menu(object):
+class Menu(metaclass=ProxyMeta):
     """The Menu is our primary interface with the API. 
 
     This is far and away the most complicated class - it wraps up most of
@@ -52,8 +53,8 @@ class Menu(object):
 
     @classmethod
     def from_store(cls, store_id, lang='en', country=COUNTRY_USA):
-        response = request_json(Urls(country).menu_url(), store_id=store_id, lang=lang)
-        menu = cls(response)
+        response = request_json(Urls(country).menu_url(), store_id=store_id, lang=lang, proxies=self.proxies)
+        menu = cls(response, proxies=self.proxies)
         return menu
 
     # TODO: Reconfigure structure to show that Codes (not ProductCodes) matter

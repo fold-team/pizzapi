@@ -2,12 +2,13 @@ from copy import deepcopy
 import requests
 
 from .menu import Menu
+from .proxy import ProxyMeta
 from .urls import Urls, COUNTRY_USA 
 from .utils import TIMEOUT
 
 
 # TODO: Add add_coupon and remove_coupon methods
-class Order(object):
+class Order(metaclass=ProxyMeta):
     """Core interface to the payments API.
 
     The Order is perhaps the second most complicated class - it wraps
@@ -84,7 +85,7 @@ class Order(object):
             'Content-Type': 'application/json'
         }
 
-        r = requests.post(url=url, headers=headers, json={'Order': self.data}, timeout=TIMEOUT)
+        r = requests.post(url=url, headers=headers, json={'Order': self.data}, timeout=TIMEOUT, proxies=self.proxies)
         r.raise_for_status()
         json_data = r.json()
 

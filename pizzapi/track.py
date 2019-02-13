@@ -2,7 +2,7 @@ from .urls import Urls, COUNTRY_USA
 from .utils import request_xml, request_json
 
 
-def track_by_phone(phone, country=COUNTRY_USA):
+def track_by_phone(phone, country=COUNTRY_USA, proxies=None):
     """Query the API to get tracking information.
 
     Not quite sure what this gets you - problem to solve for next time I get pizza. 
@@ -10,7 +10,8 @@ def track_by_phone(phone, country=COUNTRY_USA):
     phone = str(phone).strip()
     data = request_xml(
         Urls(country).track_by_phone(), 
-        phone=phone
+        phone=phone,
+        proxies=proxies,
     )['soap:Envelope']['soap:Body']
 
     response = data['GetTrackerDataResponse']['OrderStatuses']['OrderStatus']
@@ -18,12 +19,13 @@ def track_by_phone(phone, country=COUNTRY_USA):
     return response
 
 
-def track_by_order(store_id, order_key, country=COUNTRY_USA):
+def track_by_order(store_id, order_key, country=COUNTRY_USA, proxies=None):
     """Query the API to get tracking information.
     """
     return request_json(
         Urls(country).track_by_order(),
         store_id=store_id,
-        order_key=order_key
+        order_key=order_key,
+        proxies=proxies,
     )
 

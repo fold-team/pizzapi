@@ -1,4 +1,5 @@
 requests
+pysocks
 pyhamcrest
 xmltodict
 pytest

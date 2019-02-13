@@ -14,7 +14,7 @@ def request_json(url, **kwargs):
 
     This will error on an invalid request (requests.Request.raise_for_status()), but will otherwise return a dict.
     """
-    r = requests.get(url.format(**kwargs), timeout=TIMEOUT)
+    r = requests.get(url.format(**kwargs), timeout=TIMEOUT, proxies=kwargs.get('proxies'))
     r.raise_for_status()
     return r.json()
 
@@ -24,6 +24,6 @@ def request_xml(url, **kwargs):
     
     This is in every respect identical to request_json. 
     """
-    r = requests.get(url.format(**kwargs), timeout=TIMEOUT)
+    r = requests.get(url.format(**kwargs), timeout=TIMEOUT, proxies=kwargs.get('proxies'))
     r.raise_for_status()
     return xmltodict.parse(r.text)
