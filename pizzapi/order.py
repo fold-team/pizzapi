@@ -65,7 +65,7 @@ class Order(metaclass=ProxyMeta):
         codes = [x['Code'] for x in self.data['Coupons']]
         return self.data['Coupons'].pop(codes.index(code))
 
-    def _send(self, url, merge):
+    def _send(self, url, merge, timeout=TIMEOUT):
         self.data.update(
             StoreID=self.store.id,
             Email=self.customer.email,
@@ -85,7 +85,7 @@ class Order(metaclass=ProxyMeta):
             'Content-Type': 'application/json'
         }
 
-        r = requests.post(url=url, headers=headers, json={'Order': self.data}, timeout=TIMEOUT, proxies=self.proxies)
+        r = requests.post(url=url, headers=headers, json={'Order': self.data}, timeout=timeout, proxies=self.proxies)
         r.raise_for_status()
         json_data = r.json()
 
