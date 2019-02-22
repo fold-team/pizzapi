@@ -76,7 +76,7 @@ class Order(metaclass=ProxyMeta):
 
         )
 
-        for key in ('Products', 'StoreID', 'Address'):
+        for key in ('StoreID', 'Address'):
             if key not in self.data or not self.data[key]:
                 raise Exception('order has invalid value for key "%s"' % key)
 
