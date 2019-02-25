@@ -47,7 +47,11 @@ class Address(metaclass=ProxyMeta):
     def line1(self):
         resp = '{Street}'.format(**self.data)
         if self.type == 'Apartment':
-            resp += ' #{UnitNumber}'.format(**self.data)
+            resp += ' '
+            # API expects a `#` sign unless Apt / Suite prefix is used
+            if self.data['UnitNumber'][0].isdigit():
+                resp += '#'
+            resp += '{UnitNumber}'.format(**self.data)
         return resp
 
     @property
