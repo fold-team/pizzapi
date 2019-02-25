@@ -52,7 +52,7 @@ class Address(metaclass=ProxyMeta):
 
     @property
     def line2(self):
-        return '{City}, {Region}, {PostalCode}'.format(**self.data)
+        return '{City}, {Region} {PostalCode}'.format(**self.data)
 
     def nearby_stores(self, service='Delivery', show_closed=False):
         """Query the API to find nearby stores.
