@@ -1,7 +1,7 @@
 import requests
 import xmltodict
 
-TIMEOUT = 15
+TIMEOUT = 10
 
 # TODO: Find out why this occasionally hangs
 # TODO: Can we wrap this up, so the callers don't have to worry about the 
